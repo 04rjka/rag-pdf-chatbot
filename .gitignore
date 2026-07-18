@@ -10,3 +10,17 @@ ENV/
 
 __pycache__/
 *.py[cod]
+
+# Storage
+# -----------------------
+
+# Ignore generated data
+backend/storage/chroma/
+backend/storage/temp/
+
+# Ignore uploaded PDFs
+backend/storage/uploads/*
+
+# Keep empty folders
+!backend/storage/uploads/.gitkeep
+!backend/storage/temp/.gitkeep
