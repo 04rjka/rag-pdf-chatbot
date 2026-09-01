@@ -3,7 +3,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-DB_PATH = "./storage/chroma"
+DB_PATH = "./backend/storage/chroma"
 
 def create_db(chunks):
     db = Chroma.from_documents(
