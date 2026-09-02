@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.rag.retriever import retrieve
 from app.rag.chains import rag_chain
+from app.dependencies import chat_service
 
 app = FastAPI()
 
@@ -21,4 +22,9 @@ def ask(question:str):
     "question":question
     })
 
+    return response.content
+
+@app.get("/chat/{question}")
+def chat(question: str):
+    response = chat_service.ask(question=question)
     return response.content
