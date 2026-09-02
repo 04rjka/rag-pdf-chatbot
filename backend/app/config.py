@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     llm_model: str = "gemini-2.5-flash"
 
     # Storage
-    chroma_path: str = "storage/chroma"
-    upload_path: str = "storage/uploads"
+    chroma_path: str = "backend/storage/chroma"
+    upload_path: str = "backend/storage/uploads"
 
     model_config = SettingsConfigDict(
         env_file= PROJECT_ROOT / ".env",

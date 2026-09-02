@@ -5,7 +5,7 @@ class VectorStore:
         self.db_path = db_path
         self.embedding = embedding
 
-    def create_db(self,chunks):
+    def create(self,chunks):
         self.db = Chroma.from_documents(
             embedding=self.embedding,
             documents=chunks,

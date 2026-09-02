@@ -1,19 +1,21 @@
-from app.rag.pdf_loader import load_pdf
-from app.rag.chunking import split_documents,DocumentSplitter
-from app.rag.vector_store import create_db
+from app.rag.pdf_loader import load_pdf,PDFLoader
+from app.rag.chunking import DocumentSplitter
+from app.rag.vector_store import VectorStore
 from pathlib import Path
 from app.config import settings
 
-# UPLOAD_DIR = Path(__file__).resolve().parent.parent / "storage" / "uploads"
-# pdf_path = UPLOAD_DIR / "mysql.pdf"
+class IngestionService:
+    def __init__(self, pdf_loader:PDFLoader,splitter:DocumentSplitter,vector_store:VectorStore ):
+        self.pdf_loader = pdf_loader
+        self.splitter = splitter
+        self.vector_store = vector_store
 
-pdf_path = Path(settings.upload_path) / "mysql.pdf"
-documents = load_pdf(str(pdf_path))
+    def ingest(self, pdf_path):
 
-print(documents[0])
-splitter = DocumentSplitter()
+        documents = self.pdf_loader.load(pdf_path)
 
-# chunks = split_documents(documents)
-chunks = splitter.split_documents(documents)
+        chunks = self.splitter.split_documents(documents)
 
-db = create_db(chunks)
+        self.vector_store.create(chunks)
+
+        return({"chunks":len(chunks)})
