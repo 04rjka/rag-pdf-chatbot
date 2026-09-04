@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     # Storage
     chroma_path: str = "backend/storage/chroma"
     upload_path: str = "backend/storage/uploads"
+    database_url: str = "sqlite:///./backend/storage/app.db"
+
+    #Auth
+    secret_key: str
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
 
     model_config = SettingsConfigDict(
         env_file= PROJECT_ROOT / ".env",

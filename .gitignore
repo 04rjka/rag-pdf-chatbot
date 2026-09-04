@@ -17,6 +17,7 @@ __pycache__/
 # Ignore generated data
 backend/storage/chroma/
 backend/storage/temp/
+backend/storage/app.db
 
 # Ignore uploaded PDFs
 backend/storage/uploads/*
