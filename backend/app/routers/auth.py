@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from app.auth.service import AuthService
 from app.db.db import get_db
 from app.schemas.auth import LoginRequest,RegisterRequest,TokenResponse
+from app.auth.dependencies import get_current_user
+from app.models.user import User
 
 router = APIRouter(prefix="/auth",tags=["Authentication"])
 
@@ -25,3 +27,11 @@ def login(request:LoginRequest,db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid email or password.")
     return auth_service.create_tokens(user)
+
+@router.get("/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "id":current_user.id,
+        "name":current_user.name,
+        "email":current_user.email
+    }
