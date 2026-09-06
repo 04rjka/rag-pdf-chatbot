@@ -33,3 +33,6 @@ def create_refresh_token(user_id:str):
     }
 
     return jwt.encode(payload,settings.secret_key,algorithm="HS256")
+
+def decode_token(token:str):
+    return jwt.decode(token,settings.secret_key,algorithms=["HS256"])

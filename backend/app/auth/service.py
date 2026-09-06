@@ -1,7 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.auth.security import create_access_token,create_refresh_token,hash_password,verify_password
+from app.auth.security import create_access_token,create_refresh_token,hash_password,verify_password,decode_token
 from app.models.user import User
+from fastapi import HTTPException,status
 
 class AuthService:
 
@@ -33,3 +34,27 @@ class AuthService:
                 "token_type":"bearer"
             }
         )
+
+    def refresh_access_token(self,db: Session,refresh_token:str):
+        try:
+            payload = decode_token(refresh_token)
+        except Exception:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invaild refresh token.")
+
+        if payload.get("type") != "refresh":
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invaild token type.")
+
+        user_id = payload.get("sub")
+
+        if user_id is None:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invaild refresh token.")
+
+        user = db.get(User,int(user_id))
+
+        if user is None:
+                    raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="User not found.")
+
+        if not user.is_active:
+             raise HTTPException(status.HTTP_403_FORBIDDEN,detail="User account is inactive.")
+
+        return create_access_token(user.id)
