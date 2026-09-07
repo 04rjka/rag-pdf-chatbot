@@ -7,5 +7,5 @@ router = APIRouter(prefix="/chat",tags=["Chat"])
 
 @router.get("/{question}")
 def chat(question: str,chat_service:ChatService=Depends(get_chat_service),current_user:User=Depends(get_current_user)):
-    response = chat_service.ask(question=question)
+    response = chat_service.ask(question=question,user_id=current_user.id)
     return response.content

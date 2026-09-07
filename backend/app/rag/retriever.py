@@ -3,10 +3,11 @@ class Retriever:
         self.vectorstore = vectorstore
         self.k = k
 
-    def retrieve(self, question):
+    def retrieve(self, question,user_id:int):
         retriever = self.vectorstore.as_retriever(
             search_kwargs={
-                "k":self.k
+                "k":self.k,
+                "filter":{"user_id":user_id}
             }
         )
         return retriever.invoke(question)

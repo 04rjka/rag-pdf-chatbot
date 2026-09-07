@@ -3,8 +3,8 @@ class ChatService:
         self.retriever = retriever
         self.rag_chain = rag_chain
 
-    def ask(self,question):
-        docs = self.retriever.retrieve(question)
+    def ask(self,question,user_id:int):
+        docs = self.retriever.retrieve(question,user_id)
 
         context="\n\n".join(
             doc.page_content
