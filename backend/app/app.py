@@ -1,21 +1,16 @@
-from fastapi import FastAPI,UploadFile,File
-from app.dependencies import chat_service,document_service,ingestion_service
+from fastapi import FastAPI
 from app.routers.auth import router as auth_router
+from app.routers.chat import router as chat_router
+from app.routers.documents import router as documents_router
 
 app = FastAPI()
 
 app.include_router(auth_router)
+app.include_router(chat_router)
+app.include_router(documents_router)
 
 @app.get("/")
 def health():
-    return "Server Active"
-
-@app.get("/chat/{question}")
-def chat(question: str):
-    response = chat_service.ask(question=question)
-    return response.content
-
-@app.post("/upload")
-async def upload_document(file:UploadFile = File(...)):
-    result = await document_service.upload(file)
-    return result
+    return {
+        "status":"online"
+    }
