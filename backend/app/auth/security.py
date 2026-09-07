@@ -22,7 +22,7 @@ def create_access_token(user_id:int):
     }
     return jwt.encode(payload,settings.secret_key,algorithm="HS256")
 
-def create_refresh_token(user_id:str):
+def create_refresh_token(user_id:int):
     
     expire = datetime.now(timezone.utc) + timedelta(days=settings.refresh_token_expire_days)
 

@@ -49,7 +49,12 @@ class AuthService:
         if user_id is None:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invaild refresh token.")
 
-        user = db.get(User,int(user_id))
+        try:
+             user_id = int(user_id)
+        except (TypeError,ValueError):
+             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid refresh roken.")
+        
+        user = db.get(User,user_id)
 
         if user is None:
                     raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="User not found.")
