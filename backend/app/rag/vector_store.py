@@ -4,17 +4,10 @@ class VectorStore:
     def __init__(self, db_path, embedding):
         self.db_path = db_path
         self.embedding = embedding
+        self.db = Chroma(persist_directory=self.db_path,embedding_function=self.embedding)
 
-    def create(self,chunks):
-        self.db = Chroma.from_documents(
-            embedding=self.embedding,
-            documents=chunks,
-            persist_directory=self.db_path
-            )
-        return self.db
+    def add(self,chunks):
+        return self.db.add_documents(chunks) 
+    
     def load(self):
-        self.db = Chroma(
-            persist_directory=self.db_path,
-            embedding_function=self.embedding
-            )
         return self.db

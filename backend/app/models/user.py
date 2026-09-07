@@ -1,5 +1,5 @@
 from sqlalchemy import String,Boolean
-from sqlalchemy.orm import Mapped,mapped_column
+from sqlalchemy.orm import Mapped,mapped_column,relationship
 from app.db.base import Base
 
 class User(Base):
@@ -10,3 +10,5 @@ class User(Base):
     name:  Mapped[str] = mapped_column(String(255),nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255),nullable=False)
     is_active:  Mapped[bool] = mapped_column(Boolean,default=True,nullable=False)
+
+    documents = relationship("Document",back_populates="user",cascade="all, delete-orphan")

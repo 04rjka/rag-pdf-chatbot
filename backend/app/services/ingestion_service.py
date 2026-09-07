@@ -10,12 +10,16 @@ class IngestionService:
         self.splitter = splitter
         self.vector_store = vector_store
 
-    def ingest(self, pdf_path):
+    def ingest(self, pdf_path,user_id : int, document_id : int):
 
         documents = self.pdf_loader.load(pdf_path)
 
         chunks = self.splitter.split_documents(documents)
 
-        self.vector_store.create(chunks)
+        for chunk in chunks:
+            chunk.metadata["user_id"] = user_id
+            chunk.metadata["document_id"] = document_id
+
+        self.vector_store.add(chunks)
 
         return({"chunks":len(chunks)})
