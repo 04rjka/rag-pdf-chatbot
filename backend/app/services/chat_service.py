@@ -48,7 +48,7 @@ class ChatService:
             standalone_question = question
 
         
-        docs = self.retriever.retrieve(question=standalone_question,user_id=user_id)
+        docs = self.retriever.retrieve(question=standalone_question,user_id=user_id,document_id=document_id)
 
         context="\n\n".join(
             doc.page_content
