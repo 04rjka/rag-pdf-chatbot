@@ -3,6 +3,7 @@ from uuid import uuid4
 from app.config import settings
 from fastapi import UploadFile,HTTPException,status
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from app.models.user import User
 from app.models.document import Document
 from app.services.ingestion_service import IngestionService
@@ -21,9 +22,10 @@ class DocumentService:
         user_folder = self.upload_dir / str(current_user.id)
         user_folder.mkdir(parents=True,exist_ok=True)
 
+        display_name = Path(file.filename).name
         file_id = uuid4()
-        filename = f"{file_id}.pdf"
-        file_path = user_folder / filename
+        stored_filename = f"{file_id}.pdf"
+        file_path = user_folder / stored_filename
 
         contents = await file.read()
 
@@ -33,7 +35,7 @@ class DocumentService:
         except Exception as exc:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=f"Failed to write file to disk : {str(exc)}")
 
-        db_document = Document(user_id = current_user.id,filename = filename,file_path = str(file_path),)
+        db_document = Document(user_id = current_user.id,filename = display_name,file_path = str(file_path),)
 
         try:
             self.db.add(db_document)
@@ -47,10 +49,8 @@ class DocumentService:
 
         result = self.ingestion_service.ingest(str(file_path),user_id=current_user.id,document_id=db_document.id)
 
-        # return({
-        #     "id": str(file_id),
-        #     "filename":file.filename,
-        #     "path":str(file_path),
-        #     "ingestion":result
-        # })
         return db_document
+
+    def get_user_documents(self,user_id:int):
+        stmt = select(Document).where(Document.user_id == user_id).order_by(Document.created_at.desc())
+        return self.db.scalars(stmt).all()
