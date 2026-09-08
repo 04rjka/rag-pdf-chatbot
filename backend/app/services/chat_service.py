@@ -2,6 +2,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from langchain_core.messages import AIMessage,HumanMessage
+from fastapi import HTTPException,status
 
 from app.models.chat import Conversation, Message
 
@@ -14,7 +15,7 @@ class ChatService:
 
     def _get_or_create_conversation(self,conversation_id:Optional[int],user_id:int,initial_title:str):
         if conversation_id:
-            stmt = select(Conversation).where(conversation_id==conversation_id,user_id==user_id)
+            stmt = select(Conversation).where(Conversation.id==conversation_id,Conversation.user_id==user_id)
             conv = self.db.scalars(stmt).first()
             if conv:
                 return conv
@@ -69,3 +70,18 @@ class ChatService:
             "conversation_id":conversation.id,
             "answer":answer
         })
+
+    def get_conversations(self,user_id:int):
+        stmt = select(Conversation).where(Conversation.user_id == user_id).order_by(Conversation.created_at.desc())
+        converstations = self.db.scalars(stmt).all()
+        return converstations
+
+    def get_conversation_messages(self,user_id:int,conversation_id:int):
+        stmt = select(Conversation).where(Conversation.user_id == user_id,Conversation.id == conversation_id)
+        conversation = self.db.scalars(stmt).first()
+        if not conversation:
+            raise HTTPException(detail="Conversation not found or access denied.",status_code=status.HTTP_404_NOT_FOUND)
+
+        msg_stmt = select(Message).where(Message.conversation_id== conversation_id).order_by(Message.created_at.asc())
+        messages = self.db.scalars(msg_stmt).all()
+        return messages

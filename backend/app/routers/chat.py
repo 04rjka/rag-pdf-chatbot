@@ -9,5 +9,13 @@ router = APIRouter(prefix="/chat",tags=["Chat"])
 
 @router.post("",status_code=status.HTTP_200_OK)
 def chat(payload:ChatRequest,chat_service:ChatService=Depends(get_chat_service),current_user:User=Depends(get_current_user)):
-    response = chat_service.ask(question=payload.question,document_id=payload.document_id,user_id=current_user.id)
+    response = chat_service.ask(question=payload.question,document_id=payload.document_id,conversation_id=payload.conversation_id,user_id=current_user.id)
     return response
+
+@router.get("/conversations")
+def get_conversations(current_user:User = Depends(get_current_user),chat_service:ChatService= Depends(get_chat_service)):
+    return chat_service.get_conversations(user_id=current_user.id)
+
+@router.get("/conversations/{conversation_id}/messages")
+def get_conversations(conversation_id:int,current_user:User = Depends(get_current_user),chat_service:ChatService= Depends(get_chat_service)):
+    return chat_service.get_conversation_messages(user_id=current_user.id,conversation_id=conversation_id)
