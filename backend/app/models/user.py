@@ -12,3 +12,4 @@ class User(Base):
     is_active:  Mapped[bool] = mapped_column(Boolean,default=True,nullable=False)
 
     documents = relationship("Document",back_populates="user",cascade="all, delete-orphan")
+    conversations: Mapped[list["Conversation"]] = relationship(back_populates="user",cascade="all, delete-orphan")

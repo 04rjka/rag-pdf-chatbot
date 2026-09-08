@@ -8,7 +8,7 @@ from app.db.db import get_db
 from app.rag.embeddings import EmbeddingService
 from app.rag.vector_store import VectorStore
 from app.rag.retriever import Retriever
-from app.rag.chains import rag_chain
+from app.rag.chains import rag_chain,query_formulation_chain
 from app.rag.chunking import DocumentSplitter
 from app.rag.pdf_loader import PDFLoader
 
@@ -57,5 +57,5 @@ def get_ingestion_service(pdf_loader:PDFLoader = Depends(get_pdf_loader),splitte
 def get_document_service(db:Session=Depends(get_db),ingestion_service:IngestionService=Depends(get_ingestion_service)):
     return DocumentService(db=db,ingestion_service=ingestion_service)
 
-def get_chat_service(retriever:Retriever=Depends(get_retriever)):
-    return ChatService(retriever=retriever,rag_chain=rag_chain)
+def get_chat_service(retriever:Retriever=Depends(get_retriever),db:Session=Depends(get_db)):
+    return ChatService(retriever=retriever,rag_chain=rag_chain,query_formulation_chain=query_formulation_chain,db=db)
