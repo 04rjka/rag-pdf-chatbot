@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from langchain_core.messages import AIMessage,HumanMessage
 from fastapi import HTTPException,status
+import json
 
 from app.models.chat import Conversation, Message
 
@@ -25,7 +26,7 @@ class ChatService:
         self.db.refresh(new_conv)
         return new_conv
 
-    def ask(self,question,user_id:int,conversation_id:Optional[int]=None,document_id:Optional[int]=None):
+    async def ask(self,question,user_id:int,conversation_id:Optional[int]=None,document_id:Optional[int]=None):
 
         conversation = self._get_or_create_conversation(conversation_id=conversation_id,user_id=user_id,initial_title=question)
 
@@ -51,25 +52,40 @@ class ChatService:
         
         docs = self.retriever.retrieve(question=standalone_question,user_id=user_id,document_id=document_id)
 
+        meta_payload = {
+            "type": "metadata",
+            "conversation_id": conversation.id
+        }
+        yield f"data: {json.dumps(meta_payload)}\n\n"
+
         context="\n\n".join(
             doc.page_content
             for doc in docs
             )
-        answer = self.rag_chain.invoke({
+        accumulated_answer = []
+
+        async for chunk in self.rag_chain.astream({
             "context":context,
             "chat_history":chat_history,
             "question":question
-        })
+        }):
+            token = chunk.content if hasattr(chunk,"content") else str(chunk)
+            accumulated_answer.append(token)
+            token_payload = {"type":"token","content":token}
+            yield f"data: {json.dumps(token_payload)}\n\n"
+
+        full_response_text = "".join(accumulated_answer)
 
         user_msg = Message(conversation_id=conversation.id,role="user",content=question)
-        ai_msg = Message(conversation_id=conversation.id,role="assistant",content=answer)
+        ai_msg = Message(conversation_id=conversation.id,role="assistant",content=full_response_text)
         self.db.add_all([user_msg,ai_msg])
         self.db.commit()
 
-        return({
-            "conversation_id":conversation.id,
-            "answer":answer
-        })
+        # return({
+        #     "conversation_id":conversation.id,
+        #     "answer":answer
+        # })
+        yield "data: [DONE]\n\n"
 
     def get_conversations(self,user_id:int):
         stmt = select(Conversation).where(Conversation.user_id == user_id).order_by(Conversation.created_at.desc())
