@@ -63,14 +63,14 @@ def get_me(current_user: User = Depends(get_current_user)):
     }
 
 @router.post("/refresh")
-def refresh_token(request:RefreshTokenRequest, response : Response, refresh_token: str|None = Cookie(default=None),db:Session = Depends(get_db)):
+def refresh_token(response : Response, refresh_token: str|None = Cookie(default=None),db:Session = Depends(get_db)):
     if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token missing from cookies"
         )
     
-    new_access_token = auth_service.refresh_access_token(refresh_token=request.refresh_token,db=db)
+    new_access_token = auth_service.refresh_access_token(refresh_token=refresh_token,db=db)
 
     response.set_cookie(
             key="access_token",

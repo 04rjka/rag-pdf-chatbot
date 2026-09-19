@@ -1,14 +1,13 @@
-import axios, {AxiosError,InternalAxiosRequestConfig} from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 export const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-    withCredentials : true,
-    headers:{
+    withCredentials: true,
+    headers: {
         "Content-Type": "application/json",
     },
 });
 
-// Variables to handle simultaneous requests during refresh
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
@@ -26,19 +25,28 @@ const processQueue = (error: AxiosError | null) => {
   failedQueue = [];
 };
 
-// Response Interceptor for handling 401s
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // Prevent infinite loops: Don't attempt to refresh if the failed call WAS the login or refresh endpoint
-    const isAuthRoute =
+    // Check if the endpoint itself is an authentication-related endpoint
+    const isAuthEndpoint =
       originalRequest.url?.includes('/auth/login') ||
-      originalRequest.url?.includes('/auth/refresh');
+      originalRequest.url?.includes('/auth/refresh') ||
+      originalRequest.url?.includes('/auth/logout');
 
-    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
-      // If a refresh is already in progress, queue this request until the new token arrives
+    // Check if user is currently sitting on an auth route page
+    const isAuthPage =
+      typeof window !== 'undefined' &&
+      (window.location.pathname === '/login' || window.location.pathname === '/register');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+      // If we are already on /login, don't attempt to refresh or redirect—just fail cleanly
+      if (isAuthPage) {
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -51,19 +59,14 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Call FastAPI to issue a new access_token cookie
         await api.post('/auth/refresh');
-
-        // Resolve any queued requests that arrived during refresh
         processQueue(null);
-
-        // Retry the original failed request
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh token is expired or invalid -> Clear queue and send to login page
         processQueue(refreshError as AxiosError);
 
-        if (typeof window !== 'undefined') {
+        // Redirect only if not already on /login
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
           window.location.href = '/login';
         }
 
