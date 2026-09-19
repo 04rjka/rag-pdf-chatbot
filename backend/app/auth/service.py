@@ -31,7 +31,6 @@ class AuthService:
             {
                 "access_token": create_access_token(user.id),
                 "refresh_token": create_refresh_token(user.id),
-                "token_type":"bearer"
             }
         )
 
@@ -39,15 +38,15 @@ class AuthService:
         try:
             payload = decode_token(refresh_token)
         except Exception:
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invaild refresh token.")
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invalid refresh token.")
 
         if payload.get("type") != "refresh":
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invaild token type.")
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invalid token type.")
 
         user_id = payload.get("sub")
 
         if user_id is None:
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invaild refresh token.")
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Invalid refresh token.")
 
         try:
              user_id = int(user_id)
