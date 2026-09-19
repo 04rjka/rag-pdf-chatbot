@@ -46,7 +46,7 @@ def login(request:LoginRequest,response:Response,db: Session = Depends(get_db)):
     )
     response.set_cookie(
             key="refresh_token",
-            value=tokens["access_token"],
+            value=tokens["refresh_token"],
             max_age=(settings.refresh_token_expire_days * 1440),
             path="/auth",
             **COOKIE_PARAMS
