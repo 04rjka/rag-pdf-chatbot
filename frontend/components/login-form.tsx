@@ -4,6 +4,7 @@ import { cn } from "cn"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema, LoginFormValues } from "@/lib/schemas/login-schema"
+import Link from "next/link"
 
 import { loginUser } from "@/lib/services/auth"
 
@@ -96,7 +97,7 @@ export function LoginForm({
                   </p>
                 )}
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  Don&apos;t have an account? <Link href={"/signup"}>Sign Up</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

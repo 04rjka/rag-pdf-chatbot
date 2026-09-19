@@ -39,7 +39,7 @@ api.interceptors.response.use(
     // Check if user is currently sitting on an auth route page
     const isAuthPage =
       typeof window !== 'undefined' &&
-      (window.location.pathname === '/login' || window.location.pathname === '/register');
+      (window.location.pathname === '/login' ||window.location.pathname === '/signup'|| window.location.pathname === '/register');
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       // If we are already on /login, don't attempt to refresh or redirect—just fail cleanly
