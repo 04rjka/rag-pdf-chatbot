@@ -22,5 +22,5 @@ def get_conversations(current_user:User = Depends(get_current_user),chat_service
     return chat_service.get_conversations(user_id=current_user.id)
 
 @router.get("/conversations/{conversation_id}/messages")
-def get_conversations(conversation_id:int,current_user:User = Depends(get_current_user),chat_service:ChatService= Depends(get_chat_service)):
+def get_conversation(conversation_id:int,current_user:User = Depends(get_current_user),chat_service:ChatService= Depends(get_chat_service)):
     return chat_service.get_conversation_messages(user_id=current_user.id,conversation_id=conversation_id)
