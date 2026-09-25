@@ -72,7 +72,7 @@ const sidebarData: SidebarData = {
       title: "Overview",
       items: [
         {label: "Dashboard",icon: LayoutDashboard,href: "#"},
-        { label: "Chats", icon: ClipboardList, href: "/conversations" },
+        { label: "Chats", icon: ClipboardList, href: "/chats" },
         { label: "Documents", icon: BarChart3, href: "/documents" },
       ],
     },
