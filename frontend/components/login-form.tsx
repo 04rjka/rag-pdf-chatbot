@@ -1,11 +1,11 @@
 "use client"
 
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema, LoginFormValues } from "@/lib/schemas/login-schema"
 import Link from "next/link"
-
+import { useSearchParams } from "next/navigation"
 import { loginUser } from "@/lib/services/auth"
 
 import { Button } from "@/components/ui/button"
@@ -29,6 +29,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
 
+  const searchParams = useSearchParams()
+  const redirectTarget = searchParams.get("from") || "/"
   const {
     register,
     handleSubmit,
@@ -43,6 +45,7 @@ export function LoginForm({
     try {
       const response = await loginUser(values)
       console.log("Login successful : ",response.data )
+      window.location.href = redirectTarget;
     } catch (err:any) {
       const errorMessage = err?.response?.data?.detail || "Invalid email or password"
       setError("root", { message: errorMessage })
