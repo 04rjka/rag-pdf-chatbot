@@ -10,7 +10,8 @@ router = APIRouter(prefix="/chat",tags=["Chat"])
 
 @router.post("",status_code=status.HTTP_200_OK)
 async def chat(payload:ChatRequest,chat_service:ChatService=Depends(get_chat_service),current_user:User=Depends(get_current_user)):
-    generator = chat_service.ask(question=payload.question,document_id=payload.document_id,conversation_id=payload.conversation_id,user_id=current_user.id)
+    conversation = chat_service.get_or_create_conversation(conversation_id=payload.conversation_id,document_id=payload.document_id,user_id=current_user.id,initial_title=payload.question)
+    generator = chat_service.ask(question=payload.question,user_id=current_user.id,conversation=conversation)
     return StreamingResponse(generator,media_type="text/event-stream",headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",

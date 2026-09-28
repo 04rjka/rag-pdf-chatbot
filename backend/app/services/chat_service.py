@@ -14,21 +14,26 @@ class ChatService:
         self.query_formulation_chain = query_formulation_chain
         self.db = db
 
-    def _get_or_create_conversation(self,conversation_id:Optional[int],user_id:int,initial_title:str):
+    def get_or_create_conversation(self,conversation_id:Optional[int],user_id:int,document_id:int,initial_title:str):
         if conversation_id:
             stmt = select(Conversation).where(Conversation.id==conversation_id,Conversation.user_id==user_id)
             conv = self.db.scalars(stmt).first()
-            if conv:
-                return conv
-        new_conv = Conversation(user_id = user_id,title=initial_title[:40])
+            if not conv:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Chat not found")
+            if conv.document_id is None:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="This chat's document has been deleted")
+            
+            return conv
+        if not document_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="A document is required for a new chat")
+        
+        new_conv = Conversation(user_id = user_id,title=initial_title[:40],document_id=document_id)
         self.db.add(new_conv)
         self.db.commit()
         self.db.refresh(new_conv)
         return new_conv
 
-    async def ask(self,question,user_id:int,conversation_id:Optional[int]=None,document_id:Optional[int]=None):
-
-        conversation = self._get_or_create_conversation(conversation_id=conversation_id,user_id=user_id,initial_title=question)
+    async def ask(self,question,user_id:int,conversation:Conversation):
 
         stmt = select(Message).where(Message.conversation_id == conversation.id).order_by(Message.created_at.asc())
 
@@ -49,8 +54,10 @@ class ChatService:
         else:
             standalone_question = question
 
-        
-        docs = self.retriever.retrieve(question=standalone_question,user_id=user_id,document_id=document_id)
+        self.db.add(Message(conversation_id=conversation.id,role="user",content=question))
+        self.db.commit()
+
+        docs = self.retriever.retrieve(question=standalone_question,user_id=user_id,document_id=conversation.document_id)
 
         meta_payload = {
             "type": "metadata",
@@ -76,15 +83,11 @@ class ChatService:
 
         full_response_text = "".join(accumulated_answer)
 
-        user_msg = Message(conversation_id=conversation.id,role="user",content=question)
+        
         ai_msg = Message(conversation_id=conversation.id,role="assistant",content=full_response_text)
-        self.db.add_all([user_msg,ai_msg])
+        self.db.add(ai_msg)
         self.db.commit()
 
-        # return({
-        #     "conversation_id":conversation.id,
-        #     "answer":answer
-        # })
         yield "data: [DONE]\n\n"
 
     def get_conversations(self,user_id:int):
