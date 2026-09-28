@@ -104,3 +104,12 @@ class ChatService:
         msg_stmt = select(Message).where(Message.conversation_id== conversation_id).order_by(Message.created_at.asc())
         messages = self.db.scalars(msg_stmt).all()
         return messages
+
+    def delete_conversation(self,user_id:int,conversation_id:int):
+            stmt = select(Conversation).where(Conversation.user_id == user_id,Conversation.id == conversation_id)
+            conversation = self.db.scalars(stmt).first()
+            if not conversation:
+                raise HTTPException(detail="Conversation not found or access denied.",status_code=status.HTTP_404_NOT_FOUND)
+
+            self.db.delete(conversation)
+            self.db.commit()
