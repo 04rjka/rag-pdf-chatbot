@@ -165,12 +165,11 @@ const Sidebar1 = ({ className, children }: Sidebar1Props) => {
   return (
     <SidebarProvider className={cn(className)}>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="flex flex-col h-screen overflow-hidden">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
-          {/* page title / info here */}
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
+        <div className="flex flex-1 min-h-0">
           {children}
         </div>
       </SidebarInset>

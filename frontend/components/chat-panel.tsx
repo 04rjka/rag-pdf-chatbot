@@ -40,7 +40,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
       })
   }
   return (
-    <div className="flex flex-1 flex-col h-screen min-w-0">
+    <div className="flex flex-1 flex-col h-full min-w-0">
       {/* Header */}
       <div className="flex h-14 items-center border-b px-4">
         <h2 className="text-sm font-medium">Document.pdf</h2>
