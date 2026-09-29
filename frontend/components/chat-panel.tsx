@@ -1,7 +1,7 @@
 "use client"
 import { ChatMessage } from "./chat-message";
 import { ChatInput } from "./chat-input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { fetchMessages, Message, askQuestion } from "@/lib/services/chat";
 
@@ -9,6 +9,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(!!conversationId)
   const router = useRouter()
+  const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!conversationId) return
@@ -20,15 +21,19 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
     console.log(conversationId, messages)
   }, [conversationId])
 
-  async function handleSend(question:string) {
-    const userMsg:Message = {id:Date.now(),role:"user",content:question,created_at:""}
-    const botMsg:Message = {id:Date.now()+1,role:"bot",content:"",created_at:""}
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
+  async function handleSend(question: string) {
+    const userMsg: Message = { id: Date.now(), role: "user", content: question, created_at: "" }
+    const botMsg: Message = { id: Date.now() + 1, role: "bot", content: "", created_at: "" }
     setMessages((prev) => [...prev, userMsg, botMsg])
 
-    await askQuestion(question,conversationId,documentId,(newConversationId)=>{
+    await askQuestion(question, conversationId, documentId, (newConversationId) => {
       if (!conversationId) router.replace(`chat/${newConversationId}`)
     },
-  (token)=>{
+      (token) => {
         setMessages((prev) => {
           const updated = [...prev]
           updated[updated.length - 1] = {
@@ -52,6 +57,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
           {messages.map((message) => (
             <ChatMessage key={message.id} role={message.role} content={message.content} />
           ))}
+          <div ref={bottomRef} />
         </div>
       </div>
 
