@@ -4,10 +4,12 @@ import { ChatInput } from "./chat-input";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { fetchMessages, Message, askQuestion } from "@/lib/services/chat";
+import { Loader2 } from "lucide-react";
 
 export function ChatPanel({ conversationId, documentId }: { conversationId?: number, documentId?: number }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(!!conversationId)
+  const [sending, setSending] = useState(false)
   const router = useRouter()
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -30,6 +32,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
     const botMsg: Message = { id: Date.now() + 1, role: "bot", content: "", created_at: "" }
     setMessages((prev) => [...prev, userMsg, botMsg])
 
+    setSending(true)
     await askQuestion(question, conversationId, documentId, (newConversationId) => {
       if (!conversationId) router.replace(`chat/${newConversationId}`)
     },
@@ -43,6 +46,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
           return updated
         })
       })
+    setSending(false)
   }
   return (
     <div className="flex flex-1 flex-col h-full min-w-0">
@@ -53,18 +57,30 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 min-w-0">
-        <div className="mx-auto max-w-3xl w-full">
-          {messages.map((message) => (
-            <ChatMessage key={message.id} role={message.role} content={message.content} />
-          ))}
-          <div ref={bottomRef} />
-        </div>
+        {
+          loading ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <div className="mx-auto max-w-3xl w-full">
+              {messages.map((message) => (
+                <ChatMessage key={message.id} role={message.role} content={message.content} />
+              ))}
+              {sending && (
+                <div className="text-sm text-muted-foreground px-1">Thinking...</div>
+              )}
+              <div ref={bottomRef} />
+            </div>
+          )
+        }
+
       </div>
 
       {/* Input */}
       <div className="border-t p-4 min-w-0">
         <div className="mx-auto max-w-3xl w-full">
-          <ChatInput onSend={handleSend} />
+          <ChatInput onSend={handleSend} disabled={loading || sending} />
         </div>
       </div>
     </div>
