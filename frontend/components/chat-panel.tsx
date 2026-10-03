@@ -34,7 +34,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
 
     setSending(true)
     await askQuestion(question, conversationId, documentId, (newConversationId) => {
-      if (!conversationId) router.replace(`chat/${newConversationId}`)
+      if (!conversationId) router.replace(`/chats/${newConversationId}`)
     },
       (token) => {
         setMessages((prev) => {
