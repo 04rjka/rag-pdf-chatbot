@@ -79,3 +79,9 @@ def refresh_token(response : Response, refresh_token: str|None = Cookie(default=
             **COOKIE_PARAMS
         )
     return {"message": "Token refreshed successfully"}
+
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie(key="access_token", path="/")
+    response.delete_cookie(key="refresh_token", path="/auth")
+    return {"message": "Logged out successfully"}

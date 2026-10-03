@@ -5,6 +5,7 @@ import {
   HelpCircle,
   LayoutDashboard,
   Settings,
+  LogOut
 } from "lucide-react";
 import { cn } from "cn";
 
@@ -36,6 +37,7 @@ import {
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 type NavItem = {
   label: string;
@@ -112,6 +114,7 @@ const SidebarLogo = ({ logo }: { logo: SidebarData["logo"] }) => {
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   const pathname = usePathname();
+  const { logout } = useAuth();
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -143,6 +146,12 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                   <SidebarMenuButton render={<Link href={item.href} />}>{item.label}</SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={logout}>
+                  <LogOut className="size-4"/>
+                  Logout
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
