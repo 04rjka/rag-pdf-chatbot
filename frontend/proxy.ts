@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const authRoutes = ["/login", "/signup"];
-const protectedRoutes = ["/documents", "/settings", "/chats"];
+const protectedRoutes = ["/documents", "/settings", "/chats","/upload"];
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
