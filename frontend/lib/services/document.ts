@@ -14,3 +14,8 @@ export async function uploadDocument(file: File) {
     headers: { "Content-Type": "multipart/form-data" },
   });
 }
+
+export async function getDocuments() {
+  const response = await api.get("/documents")
+  return response
+}
