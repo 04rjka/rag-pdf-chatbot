@@ -39,6 +39,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useSidebar } from "@/components/ui/sidebar"
 
 type NavItem = {
   label: string;
@@ -174,14 +175,26 @@ interface Sidebar1Props {
   children?: React.ReactNode;
 }
 
+function HeaderBar() {
+  const { state } = useSidebar()
+  return (
+    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+      <SidebarTrigger className="-ml-1" />
+      {state === "collapsed" && (
+        <span className="text-sm font-medium text-muted-foreground">
+          PaperChat AI
+        </span>
+      )}
+    </header>
+  )
+}
+
 const Sidebar1 = ({ className, children }: Sidebar1Props) => {
   return (
     <SidebarProvider className={cn(className)}>
       <AppSidebar />
       <SidebarInset className="flex flex-col h-screen overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-        </header>
+        <HeaderBar />
         <div className="flex flex-1 min-h-0">
           {children}
         </div>
