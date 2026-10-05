@@ -38,6 +38,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { ThemeToggle } from "@/components/theme-toggle"
 
 type NavItem = {
   label: string;
@@ -73,7 +74,7 @@ const sidebarData: SidebarData = {
     {
       title: "Overview",
       items: [
-        {label: "New Chat",icon: LayoutDashboard,href: "/upload"},
+        { label: "New Chat", icon: LayoutDashboard, href: "/upload" },
         { label: "Chats", icon: ClipboardList, href: "/chats" },
         { label: "Documents", icon: BarChart3, href: "/documents" },
       ],
@@ -138,17 +139,20 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>
-          <SidebarGroupLabel>{sidebarData.footerGroup.title}</SidebarGroupLabel>
+          {/* <SidebarGroupLabel>{sidebarData.footerGroup.title}</SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu>
-              {sidebarData.footerGroup.items.map((item) => (
+              {/* {sidebarData.footerGroup.items.map((item) => (
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton render={<Link href={item.href} />}>{item.label}</SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+              ))} */}
+              <SidebarMenuItem>
+                <ThemeToggle />
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={logout}>
-                  <LogOut className="size-4"/>
+                  <LogOut className="size-4" />
                   Logout
                 </SidebarMenuButton>
               </SidebarMenuItem>
