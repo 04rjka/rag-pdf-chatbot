@@ -36,7 +36,7 @@ export default function DocumentPage() {
           <Link
             key={doc.id}
             href={`/chats/new?document=${doc.id}`}
-            className="mb-2 rounded-lg border border-border p-3 flex justify-between items-center hover:bg-muted w-full max-w-xl"
+            className="mb-2 flex w-full max-w-xl flex-col gap-2 rounded-lg border border-border p-3 hover:bg-muted sm:flex-row sm:items-center sm:justify-between sm:gap-4"
           >
             <div className="min-w-0">
               <p className="font-medium text-foreground truncate">{doc.filename}</p>
