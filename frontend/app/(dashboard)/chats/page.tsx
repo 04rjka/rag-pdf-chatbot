@@ -39,7 +39,7 @@ export default function Home() {
       </div>
     ) : (
       chats.map((c) => (
-        <Link key={c.id} href={`chats/${c.id}`} className="mb-2 rounded-lg border border-border p-3 flex gap-5 justify-between items-center hover:bg-muted w-full max-w-xl">
+        <Link key={c.id} href={`/chats/${c.id}`} className="mb-2 rounded-lg border border-border p-3 flex gap-5 justify-between items-center hover:bg-muted w-full max-w-xl">
           <h3 className="font-medium text-foreground truncate min-w-0">{c.title}</h3>
           <p className="text-sm text-muted-foreground">
             {new Date(c.created_at).toLocaleString()}
