@@ -117,6 +117,7 @@ const SidebarLogo = ({ logo }: { logo: SidebarData["logo"] }) => {
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { setOpenMobile } = useSidebar();
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -127,10 +128,16 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
           <SidebarGroup key={group.title}>
             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="gap-1">
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.label}>
-                    <SidebarMenuButton isActive={pathname === item.href} render={<Link href={item.href} />}>{item.label}</SidebarMenuButton>
+                    <SidebarMenuButton
+                      isActive={pathname.startsWith(item.href)}
+                      onClick={() => setOpenMobile(false)}
+                      render={<Link href={item.href} />}
+                    >
+                      {item.label}
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -140,19 +147,18 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>
-          {/* <SidebarGroupLabel>{sidebarData.footerGroup.title}</SidebarGroupLabel> */}
           <SidebarGroupContent>
-            <SidebarMenu>
-              {/* {sidebarData.footerGroup.items.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton render={<Link href={item.href} />}>{item.label}</SidebarMenuButton>
-                </SidebarMenuItem>
-              ))} */}
+            <SidebarMenu className="gap-1">
               <SidebarMenuItem>
                 <ThemeToggle />
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={logout}>
+                <SidebarMenuButton
+                  onClick={() => {
+                    setOpenMobile(false)
+                    logout()
+                  }}
+                >
                   <LogOut className="size-4" />
                   Logout
                 </SidebarMenuButton>
@@ -176,11 +182,11 @@ interface Sidebar1Props {
 }
 
 function HeaderBar() {
-  const { state } = useSidebar()
+  const { state, isMobile } = useSidebar()
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger className="-ml-1" />
-      {state === "collapsed" && (
+      {(isMobile || state === "collapsed") && (
         <span className="text-sm font-medium text-muted-foreground">
           PaperChat AI
         </span>
