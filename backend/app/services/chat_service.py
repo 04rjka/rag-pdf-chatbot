@@ -27,7 +27,9 @@ class ChatService:
         if not document_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="A document is required for a new chat")
         
-        new_conv = Conversation(user_id = user_id,title=initial_title[:40],document_id=document_id)
+        t = initial_title.strip()[:40]
+        title = t[:1].upper() + t[1:]
+        new_conv = Conversation(user_id = user_id,title=title,document_id=document_id)
         self.db.add(new_conv)
         self.db.commit()
         self.db.refresh(new_conv)
