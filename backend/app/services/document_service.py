@@ -54,3 +54,10 @@ class DocumentService:
     def get_user_documents(self,user_id:int):
         stmt = select(Document).where(Document.user_id == user_id).order_by(Document.created_at.desc())
         return self.db.scalars(stmt).all()
+
+    def get_document(self, user_id: int, document_id: int):
+        stmt = select(Document).where(Document.id == document_id, Document.user_id == user_id)
+        doc = self.db.scalars(stmt).first()
+        if not doc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+        return doc

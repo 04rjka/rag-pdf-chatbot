@@ -15,9 +15,19 @@ export interface Message {
   created_at: string;
 }
 
+export interface ConversationDetail {
+  id: number;
+  title: string;
+  document: { id: number; filename: string } | null;
+}
+
 export async function fetchChats():Promise<AxiosResponse<Conversation[]>>{
     const response = await api.get<Conversation[]>("/chat/conversations")
     return response
+}
+
+export function fetchConversation(id: number) {
+  return api.get<ConversationDetail>(`/chat/conversations/${id}`);
 }
 
 export async function fetchMessages(conversationId: number): Promise<AxiosResponse<Message[]>> {

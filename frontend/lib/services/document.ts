@@ -19,3 +19,7 @@ export async function getDocuments() {
   const response = await api.get("/documents")
   return response
 }
+
+export function fetchDocument(id: number) {
+  return api.get<Document>(`/documents/${id}`);
+}

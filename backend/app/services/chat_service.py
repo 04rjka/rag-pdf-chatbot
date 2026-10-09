@@ -33,6 +33,13 @@ class ChatService:
         self.db.refresh(new_conv)
         return new_conv
 
+    def get_conversation(self, user_id: int, conversation_id: int):
+        stmt = select(Conversation).where(Conversation.id == conversation_id, Conversation.user_id == user_id)
+        conversation = self.db.scalars(stmt).first()
+        if not conversation:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
+        return conversation
+
     async def ask(self,question,user_id:int,conversation:Conversation):
 
         stmt = select(Message).where(Message.conversation_id == conversation.id).order_by(Message.created_at.asc())

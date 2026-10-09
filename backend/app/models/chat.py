@@ -13,6 +13,7 @@ class Conversation(Base):
     created_at:Mapped[DateTime]= mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc),nullable=False)
     user: Mapped[User] = relationship(back_populates="conversations")
     messages: Mapped[list[Message]] = relationship(back_populates="conversation",cascade="all, delete-orphan",order_by="Message.created_at")
+    document: Mapped["Document | None"] = relationship()
 
 class Message(Base):
     __tablename__ = "messages"

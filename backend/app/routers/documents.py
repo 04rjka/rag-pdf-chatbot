@@ -13,3 +13,7 @@ async def upload_document(file:UploadFile = File(...),document_service:DocumentS
 @router.get("")
 def get_documents(current_user:User = Depends(get_current_user),document_service:DocumentService=Depends(get_document_service)):
     return document_service.get_user_documents(user_id=current_user.id)
+
+@router.get("/{document_id}")
+def get_document(document_id: int, current_user: User = Depends(get_current_user),document_service: DocumentService = Depends(get_document_service)):
+    return document_service.get_document(user_id=current_user.id, document_id=document_id)

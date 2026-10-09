@@ -3,15 +3,29 @@ import { ChatMessage } from "./chat-message";
 import { ChatInput } from "./chat-input";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { fetchMessages, Message, askQuestion } from "@/lib/services/chat";
+import { fetchMessages, Message, askQuestion, fetchConversation } from "@/lib/services/chat";
+import { fetchDocument } from "@/lib/services/document";
 import { Loader2 } from "lucide-react";
 
 export function ChatPanel({ conversationId, documentId }: { conversationId?: number, documentId?: number }) {
+  const [documentName, setDocumentName] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(!!conversationId)
   const [sending, setSending] = useState(false)
   const router = useRouter()
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (conversationId) {
+      fetchConversation(conversationId)
+        .then((res) => setDocumentName(res.data.document?.filename ?? "Document deleted"))
+        .catch(() => setDocumentName(null))
+    } else if (documentId) {
+      fetchDocument(documentId)
+        .then((res) => setDocumentName(res.data.filename))
+        .catch(() => setDocumentName(null))
+    }
+  }, [conversationId, documentId])
 
   useEffect(() => {
     if (!conversationId) return
@@ -52,7 +66,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
     <div className="flex flex-1 flex-col h-full min-w-0">
       {/* Header */}
       <div className="flex h-14 items-center border-b px-4">
-        <h2 className="text-sm font-medium">Document.pdf</h2>
+        <h2 className="text-sm font-medium truncate">{ documentName ?? "" }</h2>
       </div>
 
       {/* Messages */}
