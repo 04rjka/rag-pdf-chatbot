@@ -2,7 +2,8 @@
 import { getDocuments, Document } from "@/lib/services/document";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function DocumentPage() {
   const [documents, setDocuments] = useState<Document[]>([])
@@ -22,7 +23,14 @@ export default function DocumentPage() {
   return (
     <div className="flex flex-col flex-1 items-center justify-start bg-background font-sans p-3">
       {documents.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No documents yet</p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+          <FileText className="h-10 w-10 text-muted-foreground" />
+          <h2 className="text-lg font-medium">No documents yet</h2>
+          <p className="text-sm text-muted-foreground max-w-xs">
+            Upload a PDF and ask questions about it. Your documents will show up here.
+          </p>
+          <Button nativeButton={false} render={<Link href="/upload" />}>Upload a document</Button>
+        </div>
       ) : (
         documents.map((doc) => (
           <Link
