@@ -3,6 +3,7 @@ from datetime import datetime,timezone
 from sqlalchemy import String,DateTime,ForeignKey,Text
 from sqlalchemy.orm import Mapped,mapped_column,relationship
 from app.db.db import Base
+from app.db.types import UTCDateTime
 
 class Conversation(Base):
     __tablename__ = "conversations"
@@ -10,7 +11,7 @@ class Conversation(Base):
     user_id:Mapped[int] = mapped_column(ForeignKey("users.id",ondelete="cascade"),index=True,nullable=False)
     title:Mapped[str] = mapped_column(String(255),nullable=False,default="New chat")
     document_id: Mapped[int | None] = mapped_column(ForeignKey("documents.id", ondelete="SET NULL"), nullable=True, index=True)
-    created_at:Mapped[datetime]= mapped_column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc),nullable=False)
+    created_at:Mapped[datetime]= mapped_column(UTCDateTime,default=lambda:datetime.now(timezone.utc),nullable=False)
     user: Mapped[User] = relationship(back_populates="conversations")
     messages: Mapped[list[Message]] = relationship(back_populates="conversation",cascade="all, delete-orphan",order_by="Message.created_at")
     document: Mapped["Document | None"] = relationship()
@@ -22,6 +23,6 @@ class Message(Base):
     conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id", ondelete="CASCADE"),index=True,nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=lambda: datetime.now(timezone.utc),nullable=False)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime,default=lambda: datetime.now(timezone.utc),nullable=False)
 
     conversation: Mapped[Conversation] = relationship(back_populates="messages")
