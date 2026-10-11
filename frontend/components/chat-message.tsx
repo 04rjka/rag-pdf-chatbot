@@ -1,5 +1,8 @@
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 type ChatMessageProps = {
-  role: "user" | "bot";
+  role: "user" | "assistant";
   content: string;
 };
 
@@ -15,7 +18,13 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
             : "bg-muted text-foreground"
         }`}
       >
-        {content}
+        {isUser ? (
+          <p className="whitespace-pre-wrap">{content}</p>
+        ) : (
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          </div>
+        )}
       </div>
     </div>
   );

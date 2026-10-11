@@ -10,7 +10,7 @@ export interface Conversation {
 
 export interface Message {
   id: number;
-  role: "user" | "bot";
+  role: "user" | "assistant";
   content: string;
   created_at: string;
 }

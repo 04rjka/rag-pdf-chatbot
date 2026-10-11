@@ -43,7 +43,7 @@ export function ChatPanel({ conversationId, documentId }: { conversationId?: num
 
   async function handleSend(question: string) {
     const userMsg: Message = { id: Date.now(), role: "user", content: question, created_at: "" }
-    const botMsg: Message = { id: Date.now() + 1, role: "bot", content: "", created_at: "" }
+    const botMsg: Message = { id: Date.now() + 1, role: "assistant", content: "", created_at: "" }
     setMessages((prev) => [...prev, userMsg, botMsg])
 
     setSending(true)
