@@ -12,9 +12,9 @@ class Settings(BaseSettings):
     llm_model: str = "gemini-2.5-flash"
 
     # Storage
-    chroma_path: str = "backend/storage/chroma"
-    upload_path: str = "backend/storage/uploads"
-    database_url: str = "sqlite:///./backend/storage/app.db"
+    chroma_path: str = str(PROJECT_ROOT / "backend/storage/chroma")
+    upload_path: str = str(PROJECT_ROOT / "backend/storage/uploads")
+    database_url: str = f"sqlite:///{PROJECT_ROOT / 'backend/storage/app.db'}"
 
     #Auth
     secret_key: str
