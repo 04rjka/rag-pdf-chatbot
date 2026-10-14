@@ -5,7 +5,8 @@ import {
   HelpCircle,
   LayoutDashboard,
   Settings,
-  LogOut
+  LogOut,
+  Bot
 } from "lucide-react";
 import { cn } from "cn";
 
@@ -55,7 +56,6 @@ type NavGroup = {
 
 type SidebarData = {
   logo: {
-    src: string;
     alt: string;
     title: string;
     description: string;
@@ -66,7 +66,6 @@ type SidebarData = {
 
 const sidebarData: SidebarData = {
   logo: {
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblocks-logo.svg",
     alt: "PaperChat AI",
     title: "PaperChat AI",
     description: "Chat with your documents",
@@ -96,11 +95,7 @@ const SidebarLogo = ({ logo }: { logo: SidebarData["logo"] }) => {
       <SidebarMenuItem>
         <SidebarMenuButton size="lg">
           <div className="flex aspect-square size-8 items-center justify-center rounded-sm bg-primary">
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="size-6 text-primary-foreground invert dark:invert-0"
-            />
+            <Bot className="size-8 text-primary-foreground"/>
           </div>
           <div className="flex flex-col gap-0.5 leading-none">
             <span className="font-medium">{logo.title}</span>
